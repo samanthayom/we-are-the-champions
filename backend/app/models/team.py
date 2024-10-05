@@ -1,14 +1,8 @@
 
 from datetime import datetime
-from pydantic import BaseModel, Field
-from pydantic.functional_validators import BeforeValidator
-from uuid import UUID, uuid4
-from typing import Optional
-from typing_extensions import Annotated
+from pydantic import BaseModel, Field, field_validator
+from uuid import uuid4
 
-
-# Represents an ObjectId field in the database as a string
-PyObjectId = Annotated[str, BeforeValidator(str)]
 
 class TeamModel(BaseModel):
     """
@@ -18,3 +12,11 @@ class TeamModel(BaseModel):
     name: str = Field(..., description="Team name")
     registration_date: datetime = Field(..., description="Date of registration")
     group: int = Field(..., description="Group number")
+    matches: list[str] = Field(default_factory=list, description="List of IDs of matches played")
+
+    @field_validator("group")
+    @classmethod
+    def check_group(cls, group: int) -> int:
+        if group not in {1, 2}:
+            raise ValueError("Group must be either 1 or 2")
+        return group

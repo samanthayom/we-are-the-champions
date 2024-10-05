@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from backend.app.routers.teams import router as teams_router
+from backend.app.routers.matches import router as matches_router
 from backend.app.db.config import Database
 
 
@@ -29,6 +30,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(teams_router)
+app.include_router(matches_router)
 
 
 @app.get("/")

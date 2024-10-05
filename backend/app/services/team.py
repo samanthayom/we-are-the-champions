@@ -2,6 +2,7 @@ from fastapi import HTTPException
 
 from backend.app.db.repositories.team import TeamRepository
 from backend.app.models.team import TeamModel
+from backend.app.exceptions import TeamCreationError, TeamNotFoundError, TeamUpdateError
 from backend.app.services.helpers import is_valid_group, is_unique_name
 
 class TeamService:
@@ -16,9 +17,10 @@ class TeamService:
         # Check that team names are unique
         team_names = [team.name for team in teams]
         if len(team_names) != len(set(team_names)):
-            raise HTTPException(status_code=400, detail="Team names must be unique")
+            raise TeamCreationError("Team names must be unique")
         return await self.team_repo.create_teams(teams)
     
+
     async def delete_all_teams(self) -> None:
         """
         Delete all teams
@@ -34,7 +36,14 @@ class TeamService:
         if team:
             return team
         else:
-            raise HTTPException(status_code=404, detail=f"Team not found")
+            raise TeamNotFoundError(team_id=team_id)
+    
+
+    async def get_all_teams(self) -> list[TeamModel]:
+        """
+        Get all teams
+        """
+        return await self.team_repo.get_all_teams()
 
 
     async def update_team(self, team_id: str, team: TeamModel) -> TeamModel:
@@ -42,10 +51,11 @@ class TeamService:
         Update a team by its id
         """
         # Check if the team data is valid
-        if not is_valid_group(team):
-            raise HTTPException(status_code=400, detail="Invalid group number provided")
+        existing_team = await self.team_repo.get_team_by_id(team_id)
+        if not existing_team:
+            raise TeamNotFoundError(team_id=team_id)
         
         if not await is_unique_name(team, self.team_repo):
-            raise HTTPException(status_code=400, detail="A team with this name already exists")
+            raise TeamUpdateError(f"Team with name {team.name} already exists")
     
         return await self.team_repo.update_team(team_id, team)

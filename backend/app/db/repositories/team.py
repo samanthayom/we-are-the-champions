@@ -1,6 +1,3 @@
-from fastapi import HTTPException
-from uuid import UUID
-
 from backend.app.models.team import TeamModel
 from backend.app.db.config import Database
 
@@ -9,11 +6,11 @@ class TeamRepository:
         self.collection = db.get_collection("teams")
 
 
-    async def get_team_by_id(self, team_uuid: UUID) -> TeamModel:
+    async def get_team_by_id(self, team_id: str) -> TeamModel:
         """
-        Get a team by its uuid
+        Get a team by its id
         """
-        team = await self.collection.find_one({"id": str(team_uuid)})
+        team = await self.collection.find_one({"id": team_id})
         return TeamModel(**team) if team else None
     
 
@@ -29,16 +26,8 @@ class TeamRepository:
         """
         Get all teams in the database
         """
-        return await self.collection.find().to_list(length=100)
-
-
-    async def create_team(self, team: TeamModel) -> TeamModel:
-        """
-        Create a new team
-        """
-        team_data = team.model_dump(by_alias=True)
-        await self.collection.insert_one(team_data)
-        return team
+        teams = await self.collection.find().to_list(length=50)
+        return [TeamModel(**team) for team in teams]
 
 
     async def create_teams(self, teams: list[TeamModel]) -> list[TeamModel]:
@@ -50,22 +39,20 @@ class TeamRepository:
         return teams
 
 
-    async def update_team(self, team_uuid: UUID, team: TeamModel) -> TeamModel:
+    async def update_team(self, team_id: str, team: TeamModel) -> TeamModel:
         """
-        Update a team by its uuid
+        Update a team
         """
         team_data = team.model_dump(by_alias=True)
-        update_result = await self.collection.update_one(
-            {"id": str(team_uuid)},
+        await self.collection.update_one(
+            {"id": team_id},
             {"$set": team_data}
         )
-        if update_result.modified_count == 0:
-            raise HTTPException(status_code=404, detail=f"Team not found")
         return team
     
     
     async def delete_all_teams(self) -> None:
         """
-        Delete all teams in the database
+        Delete all teams from the database
         """
         await self.collection.delete_many({})
