@@ -9,7 +9,8 @@ class MatchRepository:
         """
         Get all matches
         """
-        return await self.collection.find().to_list(length=50)
+        matches = await self.collection.find().to_list(length=50)
+        return [MatchModel(**match) for match in matches]
 
 
     async def create_matches(self, matches: list[MatchModel]) -> list[MatchModel]: 
@@ -17,7 +18,8 @@ class MatchRepository:
         Create multiple matches
         """
         match_data = [match.model_dump(by_alias=True) for match in matches]
-        return await self.collection.insert_many(match_data)
+        await self.collection.insert_many(match_data)
+        return matches
     
     async def delete_all_matches(self) -> None:
         """
@@ -30,14 +32,16 @@ class MatchRepository:
         """
         Get a match by its id
         """
-        return await self.collection.find_one({"id": match_id})
+        match = await self.collection.find_one({"id": match_id})
+        return MatchModel(**match) if match else None
     
     
     async def get_matches_by_ids(self, match_ids: list[str]) -> list[MatchModel]:
         """
         Get matches by their ids
         """
-        return await self.collection.find({"id": {"$in": match_ids}}).to_list(length=50)
+        matches = await self.collection.find({"id": {"$in": match_ids}}).to_list(length=50)
+        return [MatchModel(**match) for match in matches]
 
     
     async def update_match(self, match_id: str, match: MatchModel) -> MatchModel:

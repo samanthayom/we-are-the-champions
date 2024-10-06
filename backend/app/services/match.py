@@ -2,7 +2,7 @@ from backend.app.db.repositories.match import MatchRepository
 from backend.app.db.repositories.team import TeamRepository
 from backend.app.models.match import MatchModel
 from backend.app.exceptions import MatchCreationError, MatchNotFoundError, TeamNotFoundError, MatchUpdateError
-from backend.app.services.helpers import get_invalid_match_teams, get_previous_matches
+from backend.app.services.helpers import has_previous_match
 
 
 class MatchService:
@@ -22,18 +22,20 @@ class MatchService:
         """
         Create multiple matches
         """
-        all_teams = await self.team_repo.get_all_teams()
-        team_lookup = {team.name: team for team in all_teams}
+        team_lookup = {team.name: team for team in await self.team_repo.get_all_teams()}
 
         for match in matches:
             # Check if the match is valid
-            invalid_teams = get_invalid_match_teams(match, set(team_lookup.keys()))
-            if invalid_teams:
-                raise MatchCreationError(f"Invalid match team(s): {", ".join(invalid_teams)}")
+            team1_name, team2_name = match.teams[0].name, match.teams[1].name
+            if not team1_name in team_lookup or not team2_name in team_lookup:
+                raise MatchCreationError(match.id, f"Match involves invalid team(s)")
             
-            prev_match_ids = get_previous_matches(match, team_lookup)
-            if prev_match_ids:
-                raise MatchCreationError(f"Duplicate match found between teams {match.teams[0].name} and {match.teams[1].name}")
+            team1, team2  = team_lookup[team1_name], team_lookup[team2_name]
+            if team1.group != team2.group:
+                raise MatchCreationError(match.id, f"Match involves teams {team1.name} and {team2.name} from different groups")
+            
+            if has_previous_match(team1, team2):
+                raise MatchCreationError(match.id, f"Match involves teams {team1.name} and {team2.name} that have already played each other")
 
             for team in match.teams:
                 team_lookup[team.name].matches.append(match.id)
@@ -88,15 +90,15 @@ class MatchService:
             raise MatchNotFoundError(match_id)
         
         # Check if match data is valid
-        all_teams = await self.team_repo.get_all_teams()
-        team_lookup = {team.name: team for team in all_teams}
-        invalid_teams = get_invalid_match_teams(match, team_lookup)
-        if invalid_teams:
-            raise MatchUpdateError(f"Invalid match team(s): {", ".join(invalid_teams)}")
+        team_lookup = {team.name: team for team in await self.team_repo.get_all_teams()}
+        team1, team2  = team_lookup[match.teams[0].name], team_lookup[match.teams[1].name]
+        if not team1.name in team_lookup or not team2.name in team_lookup:
+            raise MatchUpdateError(match_id, f"Match involves invalid team(s)")
         
-        prev_match_ids = get_previous_matches(match, team_lookup)
-        if not(len(prev_match_ids) == 1 and prev_match_ids.pop() == match_id):
-            raise MatchUpdateError(f"Teams {match.teams[0].name} and {match.teams[1].name} have already played")
+        elif team1.group != team2.group:
+            raise MatchUpdateError(match_id, f"Match involves teams {team1.name} and {team2.name} from different groups")
+        
+        elif has_previous_match(team1, team2):
+            raise MatchUpdateError(match_id, f"Match involves teams {team1.name} and {team2.name} that have already played each other")
         
         return await self.match_repo.update_match(match_id, match)
-

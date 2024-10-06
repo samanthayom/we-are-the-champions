@@ -14,6 +14,10 @@ class TeamService:
         """
         Create multiple teams
         """
+        # Check that there are 12 teams
+        if len(teams) != 12:
+            raise TeamCreationError("There must be 12 teams")
+
         # Check that team names are unique
         team_names = [team.name for team in teams]
         if len(team_names) != len(set(team_names)):
