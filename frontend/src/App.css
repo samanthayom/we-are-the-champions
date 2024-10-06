@@ -1,0 +1,23 @@
+.rankings-box {
+    background-color: #e0e0e0; /* grey.300 */
+    padding: 16px;
+    margin-bottom: 32px;
+}
+
+.teams-box {
+    background-color: #e0e0e0; /* grey.300 */
+    padding: 16px;
+}
+
+.modal-box {
+    padding: 32px;
+    background-color: #ffffff; /* background.paper */
+    margin: auto;
+    max-width: 500px;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+}
