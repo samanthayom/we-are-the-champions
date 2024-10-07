@@ -1,12 +1,13 @@
 import React, { createContext, useState, useContext, useCallback, useMemo } from 'react';
-import { Stack } from '@mui/material';
+import { Button, Stack } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import GroupRankings from './Rankings';
 import Teams from './Teams';
 import { Team, Rankings } from '../interfaces';
 import { fetchTeams } from '../api/teams';
 import { fetchRankings } from '../api/rankings';
 
-// Define the context outside of the component
+
 const TeamRankingContext = createContext<TeamRankingContextType | undefined>(undefined);
 
 interface TeamRankingContextType {
@@ -47,9 +48,7 @@ function MainPanel() {
         try {
             setRankingsError(null);
             const fetchedRankings = await fetchRankings();
-            if (fetchedRankings != null) {
-                setRankings(fetchedRankings);
-            }
+            setRankings(fetchedRankings);
         } catch (error) {
             console.error('Error fetching rankings:', error);
             setRankingsError('Failed to fetch rankings');
@@ -68,11 +67,25 @@ function MainPanel() {
         [teams, teamsError, rankings, rankingsError, refreshTeams, refreshRankings]
     );
 
+    const handleClearAllData = () => {
+        setTeams([]);
+        setRankings(null);
+    };
+
     return (
         <TeamRankingContext.Provider value={contextValue}>
             <Stack spacing={6} sx={{ mt: 8, mb: 4 }}>
                 <GroupRankings />
                 <Teams />
+                <Button
+                    startIcon={<DeleteIcon />}
+                    variant="outlined"
+                    color="error"
+                    onClick={handleClearAllData}
+                    sx={{ alignSelf: 'flex-end' }}
+                >
+                    Clear All Data
+                </Button>
             </Stack>
         </TeamRankingContext.Provider>
     );
