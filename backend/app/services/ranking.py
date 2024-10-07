@@ -10,17 +10,21 @@ class RankingService:
         self.match_repo = match_repository
 
 
-    async def get_rankings(self) -> dict[str, list[TeamModel]]:
+    async def get_rankings(self) -> dict[str, list[TeamModel]] | None:
         """
         Get rankings of teams based on matches played
         """
         # Check if the number of teams in each group is valid
         teams = {team.name: team for team in await self.team_repo.get_all_teams()}  
-        if not is_valid_grouping(teams.values()):
+        if len(teams) == 0:
+            return None
+        elif not is_valid_grouping(teams.values()):
             raise RankingProcessingError("Each group must have exactly 6 teams")
 
 
         matches = await self.match_repo.get_all_matches()
+        if not matches:
+            return None
         for match in matches:
             team1, team2 = teams[match.teams[0].name], teams[match.teams[1].name]
             team1_score, team2_score = match.teams[0].score, match.teams[1].score
