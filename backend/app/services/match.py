@@ -37,14 +37,14 @@ class MatchService:
             # Check if the match is valid
             team1_name, team2_name = match.teams[0].name, match.teams[1].name
             if not team1_name in team_lookup or not team2_name in team_lookup:
-                raise MatchCreationError(match.id, f"Match involves invalid team(s)")
+                raise MatchCreationError(f"Match involves invalid team(s)")
             
             team1, team2  = team_lookup[team1_name], team_lookup[team2_name]
             if team1.group != team2.group:
-                raise MatchCreationError(match.id, f"Match involves teams {team1.name} and {team2.name} from different groups")
+                raise MatchCreationError(f"Match involves teams {team1.name} and {team2.name} from different groups")
             
             if has_previous_match(team1, team2, match.id):
-                raise MatchCreationError(match.id, f"Match involves teams {team1.name} and {team2.name} that have already played each other")
+                raise MatchCreationError(f"Match involves teams {team1.name} and {team2.name} that have already played each other")
 
             for team in match.teams:
                 team_lookup[team.name].matches.append(match.id)
@@ -86,7 +86,7 @@ class MatchService:
         """
         team = await self.team_repo.get_team_by_id(team_id)
         if not team:
-            raise TeamNotFoundError(team_id)
+            raise TeamNotFoundError()
         return await self.match_repo.get_matches_by_ids(team.matches)
     
 
@@ -102,12 +102,12 @@ class MatchService:
         team_lookup = await self.get_team_lookup()
         team1, team2  = team_lookup[match.teams[0].name], team_lookup[match.teams[1].name]
         if not team1.name in team_lookup or not team2.name in team_lookup:
-            raise MatchUpdateError(match_id, f"Match involves invalid team(s)")
+            raise MatchUpdateError(f"Match involves invalid team(s)")
         
         elif team1.group != team2.group:
-            raise MatchUpdateError(match_id, f"Match involves teams {team1.name} and {team2.name} from different groups")
+            raise MatchUpdateError(f"Match involves teams {team1.name} and {team2.name} from different groups")
         
         elif has_previous_match(team1, team2, match_id):
-            raise MatchUpdateError(match_id, f"Match involves teams {team1.name} and {team2.name} that have already played each other")
+            raise MatchUpdateError(f"Match involves teams {team1.name} and {team2.name} that have already played each other")
         
         return await self.match_repo.update_match(match_id, match)

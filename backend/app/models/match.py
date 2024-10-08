@@ -1,8 +1,6 @@
 from pydantic import BaseModel, field_validator, Field
 from uuid import uuid4
 
-from backend.app.models.team import Team
-from backend.app.exceptions import TeamNotFoundError
 
 class MatchTeam(BaseModel):
     """

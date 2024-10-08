@@ -1,5 +1,3 @@
-from fastapi import HTTPException
-
 from backend.app.db.repositories.team import TeamRepository
 from backend.app.models.team import Team
 from backend.app.exceptions import TeamCreationError, TeamNotFoundError, TeamUpdateError
@@ -40,7 +38,7 @@ class TeamService:
         if team:
             return team
         else:
-            raise TeamNotFoundError(team_id=team_id)
+            raise TeamNotFoundError()
     
 
     async def get_all_teams(self) -> list[Team]:
@@ -57,7 +55,7 @@ class TeamService:
         # Check if the team data is valid
         existing_team = await self.team_repo.get_team_by_id(team_id)
         if not existing_team:
-            raise TeamNotFoundError(team_id=team_id)
+            raise TeamNotFoundError()
         
         if not await has_valid_team_name(team, self.team_repo):
             raise TeamUpdateError(f"Team with name {team.name} already exists")
