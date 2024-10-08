@@ -1,8 +1,24 @@
 from backend.app.db.repositories.team import TeamRepository
 from backend.app.db.repositories.match import MatchRepository
 from backend.app.models.team import TeamModel
-from backend.app.services.helpers import is_valid_grouping, rank_teams
+from backend.app.services.utils import has_valid_grouping, rank_teams
 from backend.app.exceptions import RankingProcessingError
+
+
+def _rank_teams(teams: list[TeamModel]) -> list[TeamModel]:
+    """
+    Rank teams based on points, goals, alternate points, and registration date
+    """
+    return sorted(
+        teams,
+        key=lambda team: (
+            -team.points,
+            -team.goals,
+            -team.alt_points,
+            team.registration_date
+        )
+    )
+
 
 class RankingService:
     def __init__(self, team_repository: TeamRepository, match_repository: MatchRepository):
@@ -18,7 +34,7 @@ class RankingService:
         teams = {team.name: team for team in await self.team_repo.get_all_teams()}  
         if len(teams) == 0:
             return None
-        elif not is_valid_grouping(teams.values()):
+        elif not has_valid_grouping(teams.values()):
             raise RankingProcessingError("Each group must have exactly 6 teams")
 
 
@@ -39,6 +55,6 @@ class RankingService:
         group2_teams = [team for team in teams.values() if team.group == 2]
 
         return {
-            "group1": rank_teams(group1_teams),
-            "group2": rank_teams(group2_teams)
+            "group1": _rank_teams(group1_teams),
+            "group2": _rank_teams(group2_teams)
         }

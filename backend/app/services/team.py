@@ -3,7 +3,7 @@ from fastapi import HTTPException
 from backend.app.db.repositories.team import TeamRepository
 from backend.app.models.team import TeamModel
 from backend.app.exceptions import TeamCreationError, TeamNotFoundError, TeamUpdateError
-from backend.app.services.helpers import is_valid_group, is_unique_name
+from backend.app.services.utils import is_valid_grouping, has_valid_team_name
 
 class TeamService:
     def __init__(self, team_repository: TeamRepository):
@@ -59,7 +59,7 @@ class TeamService:
         if not existing_team:
             raise TeamNotFoundError(team_id=team_id)
         
-        if not await is_unique_name(team, self.team_repo):
+        if not await has_valid_team_name(team, self.team_repo):
             raise TeamUpdateError(f"Team with name {team.name} already exists")
     
         return await self.team_repo.update_team(team_id, team)
