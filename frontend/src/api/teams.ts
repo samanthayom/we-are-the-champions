@@ -1,5 +1,5 @@
 import { Team } from "../interfaces";
-import api from "./index";
+import { api, apiRequest } from "./index";
 import { snakeToCamel, camelToSnake } from "../utils";
 
 export const fetchTeams = async (): Promise<Team[]> => {

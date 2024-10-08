@@ -1,6 +1,6 @@
 import { Match } from "../interfaces";
 import { snakeToCamel } from "../utils";
-import api from "./index";
+import { api, apiRequest } from "./index";
 
 
 export const postMatches = async (matches: Match[]) => {

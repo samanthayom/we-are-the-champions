@@ -70,7 +70,11 @@ function Rankings({ onTeamSelect }: { onTeamSelect: (teamId: string) => void }) 
             <Typography variant="h4" gutterBottom>
                 Current Rankings
             </Typography>
-            { rankings === null ? (
+            {rankingsError ? (
+                <Alert severity="error">
+                    {rankingsError}
+                </Alert>
+            ) : rankings === null ? (
                 <Paper 
                     sx={{
                         mt: 2,
@@ -81,18 +85,10 @@ function Rankings({ onTeamSelect }: { onTeamSelect: (teamId: string) => void }) 
                         boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)'
                     }}
                 >
-                    {rankingsError ? (
-                        <Alert severity="error">
-                            {/* TODO: Handle error below */}
-                            {rankingsError}  
-                        </Alert>
-                    ) : (
-                        <Typography variant="body1" color="textSecondary" gutterBottom>
-                            No rankings to display.
-                        </Typography>
-                    )}
-                </Paper>    
-               
+                    <Typography variant="body1" color="textSecondary" gutterBottom>
+                        No rankings to display.
+                    </Typography>
+                </Paper> 
             ) : (
                 <>  
                     <Box sx={{ width: '100%', bgcolor: 'background.paper' }}>

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useCallback, useMemo, useEffect } from 'react';
-import { Team, Rankings } from '../interfaces';
+import { Team, Rankings, CustomError } from '../interfaces';
 import { fetchTeams } from '../api/teams';
 import { fetchRankings } from '../api/rankings';
 
@@ -45,8 +45,13 @@ export const TeamAndRankingProvider: React.FC<{ children: React.ReactNode }> = (
             const fetchedRankings = await fetchRankings();
             setRankings(fetchedRankings);
         } catch (error) {
-            console.error('Error fetching rankings:', error);
-            setRankingsError('Failed to fetch rankings');
+            if (error instanceof CustomError) {
+                console.log('Error fetching rankings:', error);
+                setRankingsError(error.uiMessage);
+            } else {
+                console.error('Error fetching rankings:', error);
+                setRankingsError('Failed to fetch rankings');
+            }
         }
     }, []);
 
