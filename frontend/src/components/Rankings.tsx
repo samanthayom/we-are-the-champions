@@ -1,19 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Typography, Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Tabs, Tab, Alert } from '@mui/material';
 import { grey, lightBlue } from '@mui/material/colors';
 
-import { useTeamRankingContext } from './MainPanel';
+import { useTeamAndRankingContext } from '../contexts/TeamAndRankingContext';
 import { Team } from '../interfaces';
 
 
-function GroupRankings() {
-    const {rankings, rankingsError, refreshRankings} = useTeamRankingContext();
+function Rankings({ onTeamSelect }: { onTeamSelect: (teamId: string) => void })  {
+    const {rankings, rankingsError} = useTeamAndRankingContext();
     const [activeTab, setActiveTab] = useState(0);
 
-    useEffect(() => {
-        refreshRankings();
-    }, [refreshRankings]);
-
+    const handleRowClick = (teamId: string) => onTeamSelect(teamId);
     const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
         setActiveTab(newValue);
     };
@@ -32,11 +29,11 @@ function GroupRankings() {
                                 <TableCell>Rank</TableCell>
                                 <TableCell>Team</TableCell>
                                 <TableCell align="right">Points</TableCell>
-                                <TableCell align="right">W</TableCell>
-                                <TableCell align="right">D</TableCell>
-                                <TableCell align="right">L</TableCell>
-                                <TableCell align="right">Goals</TableCell>
-                                <TableCell align="right">Alt Points</TableCell>
+                                <TableCell align="center">W</TableCell>
+                                <TableCell align="center">D</TableCell>
+                                <TableCell align="center">L</TableCell>
+                                <TableCell align="center">Goals</TableCell>
+                                <TableCell align="left">Alt Points</TableCell>
                                 
                             </TableRow>
                         </TableHead>
@@ -44,18 +41,21 @@ function GroupRankings() {
                         {teams.map((team, index) => (
                             <TableRow 
                                 key={team.id}
+                                onClick={() => team.id && handleRowClick(team.id)}
+                                hover
                                 sx={{ 
+                                    cursor: 'pointer',
                                     backgroundColor: index < 4 ? lightBlue[50] : 'inherit'
                                 }}
                             >
                                 <TableCell>{index + 1}</TableCell>
                                 <TableCell>{team.name}</TableCell>
                                 <TableCell align="right">{team.points}</TableCell>
-                                <TableCell align="right">{team.wins}</TableCell>
-                                <TableCell align="right">{team.draws}</TableCell>
-                                <TableCell align="right">{team.losses}</TableCell>
-                                <TableCell align="right">{team.goals}</TableCell>
-                                <TableCell align="right">{team.alt_points}</TableCell>
+                                <TableCell align="center">{team.wins}</TableCell>
+                                <TableCell align="center">{team.draws}</TableCell>
+                                <TableCell align="center">{team.losses}</TableCell>
+                                <TableCell align="center">{team.goals}</TableCell>
+                                <TableCell align="left">{team.altPoints}</TableCell>
                             </TableRow>
                             ))}
                         </TableBody>
@@ -112,4 +112,4 @@ function GroupRankings() {
     );
 }
 
-export default GroupRankings;
+export default Rankings;

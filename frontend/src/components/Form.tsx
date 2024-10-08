@@ -12,9 +12,8 @@ import {
 
 import { Team } from '../interfaces';
 import { parseTeamsInput, parseMatchesInput } from '../utils';
-import { postTeams } from '../api/teams';
+import { deleteTeams, postTeams } from '../api/teams';
 import { postMatches } from '../api/matches';
-import { useTeamRankingContext } from './MainPanel';
 
 interface FormProps {
     onClose: () => void;
@@ -23,7 +22,6 @@ interface FormProps {
 const steps = ['Enter Teams', 'Enter Match Results'];
 
 function Form({ onClose }: FormProps) {
-    const { refreshTeams, refreshRankings } = useTeamRankingContext();
     const [teams, setTeams] = useState<Team[]>([]);
     const [teamsInput, setTeamsInput] = useState('');
     const [resultsInput, setResultsInput] = useState('');
@@ -52,18 +50,17 @@ function Form({ onClose }: FormProps) {
         try {
             const matches = parseMatchesInput(resultsInput);
             setError(null);
+            await postTeams(teams);
 
-            await Promise.all([
-                postTeams(teams),
-                postMatches(matches)
-            ]);
-
-            await Promise.all([
-                refreshTeams(),
-                refreshRankings()
-            ]);
-            
-            onClose();
+            try{
+                await postMatches(matches);
+                onClose();
+            } catch (error) {
+                // Rollback if match creation fails
+                await deleteTeams();
+                console.error(error);
+                setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+            }
         } catch (error) {
             console.error(error);
             setError(error instanceof Error ? error.message : 'An unexpected error occurred');

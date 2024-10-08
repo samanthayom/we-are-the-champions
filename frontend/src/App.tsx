@@ -2,12 +2,15 @@ import React from 'react';
 import { Container } from '@mui/material';
 import MainPanel from './components/MainPanel';
 import './App.css';
+import { TeamAndRankingProvider } from './contexts/TeamAndRankingContext';
 
 function App() {
     return (
-        <Container>
-            <MainPanel />
-        </Container>
+        <TeamAndRankingProvider>
+            <Container>
+                <MainPanel />
+            </Container>
+        </TeamAndRankingProvider>
     );
 }
 

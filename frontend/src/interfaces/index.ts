@@ -6,7 +6,7 @@ export interface Team {
     matches?: string[];
 
     points?: number;
-    alt_points?: number;
+    altPoints?: number;
     wins?: number;
     draws?: number;
     losses?: number;

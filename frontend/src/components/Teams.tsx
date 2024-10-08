@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { 
     Box,
     Button,
@@ -16,33 +16,21 @@ import AddIcon from '@mui/icons-material/Add';
 import { grey } from '@mui/material/colors';
 
 import Form from './Form';
-import { useTeamRankingContext } from './MainPanel';
+import { useTeamAndRankingContext } from '../contexts/TeamAndRankingContext';
+import { formatDate } from '../utils';
 
 
-
-function Teams() {
-    const {teams, refreshTeams} = useTeamRankingContext();
+function Teams({ onTeamSelect }: { onTeamSelect: (teamId: string) => void }) {
+    const { teams, refreshTeams, refreshRankings } = useTeamAndRankingContext();
     // TODO: Import and handle teams error here
     const [open, setOpen] = useState(false);
 
-
-    useEffect(() => {
-        refreshTeams()
-    }, [refreshTeams]);
-
-    const formatDate = (dateString: string) => {
-        const date = new Date(dateString);
-    
-        return date.toLocaleDateString('en-GB', {
-            day: '2-digit',
-            month: 'long',
-            year: 'numeric',
-        });
-    };
-
+    const handleRowClick = (teamId: string) => onTeamSelect(teamId);
     const handleOpenForm = () => setOpen(true);
-    const handleCloseForm = () => {
-        setOpen(false);
+    const handleCloseForm = () => { 
+        refreshTeams();
+        refreshRankings();
+        setOpen(false)
     };
 
     return (
@@ -80,7 +68,14 @@ function Teams() {
                     </TableHead>
                     <TableBody>
                         {teams.map((team, index) => (
-                            <TableRow key={index}>
+                            <TableRow 
+                                key={index}
+                                onClick={() => team.id && handleRowClick(team.id)}
+                                hover
+                                sx={{
+                                    cursor: 'pointer'
+                                }}
+                            >
                                 <TableCell>{team.name}</TableCell>
                                 <TableCell align="center">{team.group}</TableCell>
                                 <TableCell align="center">{formatDate(team.registrationDate)}</TableCell>

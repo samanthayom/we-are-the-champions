@@ -1,93 +1,65 @@
-import React, { createContext, useState, useContext, useCallback, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Button, Stack } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import GroupRankings from './Rankings';
+import Rankings from './Rankings';
 import Teams from './Teams';
-import { Team, Rankings } from '../interfaces';
-import { fetchTeams } from '../api/teams';
-import { fetchRankings } from '../api/rankings';
+import { deleteTeams } from '../api/teams';
+import { deleteMatches } from '../api/matches';
+import TeamPanel from './TeamPanel';
+import { useTeamAndRankingContext } from '../contexts/TeamAndRankingContext';
 
-
-const TeamRankingContext = createContext<TeamRankingContextType | undefined>(undefined);
-
-interface TeamRankingContextType {
-    teams: Team[];
-    teamsError: string | null;
-    rankings: Rankings | null;
-    rankingsError: string | null;
-    refreshTeams: () => Promise<void>;
-    refreshRankings: () => Promise<void>;
-}
-
-export const useTeamRankingContext = () => {
-    const context = useContext(TeamRankingContext);
-    if (context === undefined) {
-        throw new Error('useTeamRankingContext must be used within the MainPanel');
-    }
-    return context;
-};
 
 function MainPanel() {
-    const [teams, setTeams] = useState<Team[]>([]);
-    const [teamsError, setTeamsError] = useState<string | null>(null);
-    const [rankings, setRankings] = useState<Rankings | null>(null);
-    const [rankingsError, setRankingsError] = useState<string | null>(null);
+    const {teams, refreshTeams, refreshRankings} = useTeamAndRankingContext();
+    const [teamDetailsOpen, setTeamDetailsOpen] = useState(false);
+    const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
 
-    const refreshTeams = useCallback(async () => {
+
+    const handleTeamDetailsOpen = (teamId: string) => {
+        setSelectedTeamId(teamId);
+        setTeamDetailsOpen(true);
+    };
+
+    const handleTeamDetailsClose = () => {
+        refreshTeams();
+        refreshRankings();
+        setSelectedTeamId(null);
+        setTeamDetailsOpen(false);
+    };
+
+
+    const handleClearAllData = async () => {
         try {
-            setTeamsError(null);
-            const fetchedTeams = await fetchTeams();
-            setTeams(fetchedTeams);
+            await Promise.all([deleteTeams(), deleteMatches()]);
+            refreshTeams();
+            refreshRankings();
         } catch (error) {
-            console.error('Error fetching teams:', error);
-            setTeamsError('Failed to fetch teams');
+            console.error("Error clearing data:", error);
+            // TODO: Handle error here
         }
-    }, []);
-
-    const refreshRankings = useCallback(async () => {
-        try {
-            setRankingsError(null);
-            const fetchedRankings = await fetchRankings();
-            setRankings(fetchedRankings);
-        } catch (error) {
-            console.error('Error fetching rankings:', error);
-            setRankingsError('Failed to fetch rankings');
-        }
-    }, []);
-
-    const contextValue = useMemo(
-        () => ({
-            teams,
-            teamsError,
-            rankings,
-            rankingsError,
-            refreshTeams,
-            refreshRankings,
-        }),
-        [teams, teamsError, rankings, rankingsError, refreshTeams, refreshRankings]
-    );
-
-    const handleClearAllData = () => {
-        setTeams([]);
-        setRankings(null);
     };
 
     return (
-        <TeamRankingContext.Provider value={contextValue}>
+        <>
             <Stack spacing={6} sx={{ mt: 8, mb: 4 }}>
-                <GroupRankings />
-                <Teams />
-                <Button
-                    startIcon={<DeleteIcon />}
-                    variant="outlined"
-                    color="error"
-                    onClick={handleClearAllData}
-                    sx={{ alignSelf: 'flex-end' }}
-                >
-                    Clear All Data
-                </Button>
+                <Rankings onTeamSelect={handleTeamDetailsOpen}/>
+                <Teams onTeamSelect={handleTeamDetailsOpen}/>
+                {teams.length > 0 && (
+                    <Button
+                        startIcon={<DeleteIcon />}
+                        variant="outlined"
+                        color="error"
+                        onClick={handleClearAllData}
+                        sx={{ alignSelf: 'flex-end' }}
+                    >
+                        Clear All Data
+                    </Button>
+                )}
             </Stack>
-        </TeamRankingContext.Provider>
+            {selectedTeamId && teamDetailsOpen && (
+                <TeamPanel onClose={handleTeamDetailsClose} teamID={selectedTeamId} />
+            )}
+         </>
     );
 }
 
