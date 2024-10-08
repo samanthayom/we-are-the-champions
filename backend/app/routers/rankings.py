@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Request, HTTPException
 from backend.app.services.ranking import RankingService
 from backend.app.db.repositories.team import TeamRepository
 from backend.app.db.repositories.match import MatchRepository
-from backend.app.models.team import TeamModel
+from backend.app.models.team import Team
 from backend.app.exceptions import RankingProcessingError
 
 router = APIRouter(prefix="/rankings")

@@ -1,10 +1,10 @@
 from pydantic import BaseModel, field_validator, Field
 from uuid import uuid4
 
-from backend.app.models.team import TeamModel
+from backend.app.models.team import Team
 from backend.app.exceptions import TeamNotFoundError
 
-class MatchTeamModel(BaseModel):
+class MatchTeam(BaseModel):
     """
     Represents a team in a match
     """
@@ -12,16 +12,16 @@ class MatchTeamModel(BaseModel):
     score: int
 
 
-class MatchModel(BaseModel):
+class Match(BaseModel):
     """
     Represents a match between exactly two teams
     """
     id: str = Field(default_factory=lambda: str(uuid4()))
-    teams: list[MatchTeamModel]
+    teams: list[MatchTeam]
 
     
     @field_validator("teams")
-    def has_two_teams(cls, teams: list[MatchTeamModel]) -> list[MatchTeamModel]:
+    def has_two_teams(cls, teams: list[MatchTeam]) -> list[MatchTeam]:
         """
         Check if there are two teams involved in the match and that they are not the same
         """

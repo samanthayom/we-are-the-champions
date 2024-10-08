@@ -1,4 +1,4 @@
-from backend.app.models.team import TeamModel
+from backend.app.models.team import Team
 from backend.app.db.config import Database
 
 class TeamRepository:
@@ -6,31 +6,31 @@ class TeamRepository:
         self.collection = db.get_collection("teams")
 
 
-    async def get_team_by_id(self, team_id: str) -> TeamModel:
+    async def get_team_by_id(self, team_id: str) -> Team:
         """
         Get a team by its id
         """
         team = await self.collection.find_one({"id": team_id})
-        return TeamModel(**team) if team else None
+        return Team(**team) if team else None
     
 
-    async def get_team_by_name(self, team_name: str) -> TeamModel:
+    async def get_team_by_name(self, team_name: str) -> Team:
         """
         Get a team by its name
         """
         team = await self.collection.find_one({"name": team_name})
-        return TeamModel(**team) if team else None
+        return Team(**team) if team else None
 
     
-    async def get_all_teams(self) -> list[TeamModel]:
+    async def get_all_teams(self) -> list[Team]:
         """
         Get all teams in the database
         """
         teams = await self.collection.find().to_list(length=50)
-        return [TeamModel(**team) for team in teams]
+        return [Team(**team) for team in teams]
 
 
-    async def create_teams(self, teams: list[TeamModel]) -> list[TeamModel]:
+    async def create_teams(self, teams: list[Team]) -> list[Team]:
         """
         Create multiple teams
         """
@@ -39,7 +39,7 @@ class TeamRepository:
         return teams
 
 
-    async def update_team(self, team_id: str, team: TeamModel) -> TeamModel:
+    async def update_team(self, team_id: str, team: Team) -> Team:
         """
         Update a team
         """

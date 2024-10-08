@@ -1,11 +1,11 @@
 from backend.app.db.repositories.team import TeamRepository
 from backend.app.db.repositories.match import MatchRepository
-from backend.app.models.team import TeamModel
-from backend.app.services.utils import has_valid_grouping, rank_teams
+from backend.app.models.team import Team
+from backend.app.services.utils import has_valid_grouping
 from backend.app.exceptions import RankingProcessingError
 
 
-def _rank_teams(teams: list[TeamModel]) -> list[TeamModel]:
+def _rank_teams(teams: list[Team]) -> list[Team]:
     """
     Rank teams based on points, goals, alternate points, and registration date
     """
@@ -26,7 +26,7 @@ class RankingService:
         self.match_repo = match_repository
 
 
-    async def get_rankings(self) -> dict[str, list[TeamModel]] | None:
+    async def get_rankings(self) -> dict[str, list[Team]] | None:
         """
         Get rankings of teams based on matches played
         """

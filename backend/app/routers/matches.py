@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, Request, HTTPException
 from backend.app.services.match import MatchService
 from backend.app.db.repositories.match import MatchRepository
 from backend.app.db.repositories.team import TeamRepository
-from backend.app.models.match import MatchModel
+from backend.app.models.match import Match
 from backend.app.exceptions import MatchCreationError, MatchNotFoundError, TeamNotFoundError
 
 router = APIRouter(prefix="/matches")
@@ -15,7 +15,7 @@ def _get_match_service(request: Request) -> MatchService:
     return MatchService(match_repo, team_repo)
 
 
-@router.get("/", response_model=list[MatchModel])
+@router.get("/", response_model=list[Match])
 async def get_matches(match_service: MatchService = Depends(_get_match_service)):
     try:
         return await match_service.get_all_matches()
@@ -23,8 +23,8 @@ async def get_matches(match_service: MatchService = Depends(_get_match_service))
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/", response_model=list[MatchModel])
-async def create_matches(matches: list[MatchModel], match_service: MatchService = Depends(_get_match_service)):
+@router.post("/", response_model=list[Match])
+async def create_matches(matches: list[Match], match_service: MatchService = Depends(_get_match_service)):
     try:
         return await match_service.create_matches(matches)
     except MatchCreationError as e:
@@ -42,7 +42,7 @@ async def delete_all_matches(match_service: MatchService = Depends(_get_match_se
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/{team_id}", response_model=list[MatchModel])
+@router.get("/{team_id}", response_model=list[Match])
 async def get_matches_by_team_id(team_id: str, match_service: MatchService = Depends(_get_match_service)):
     try:
         return await match_service.get_matches_by_team_id(team_id)
@@ -52,8 +52,8 @@ async def get_matches_by_team_id(team_id: str, match_service: MatchService = Dep
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.put("/{match_id}", response_model=MatchModel)
-async def update_match(match_id: str, match: MatchModel, match_service: MatchService = Depends(_get_match_service)):
+@router.put("/{match_id}", response_model=Match)
+async def update_match(match_id: str, match: Match, match_service: MatchService = Depends(_get_match_service)):
     try:
         return await match_service.update_match(match_id, match)
     except MatchNotFoundError as e:

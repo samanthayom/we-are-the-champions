@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Request, HTTPException
 
 from backend.app.services.team import TeamService
 from backend.app.db.repositories.team import TeamRepository
-from backend.app.models.team import TeamModel
+from backend.app.models.team import Team
 from backend.app.exceptions import TeamCreationError, TeamNotFoundError
 
 router = APIRouter(prefix="/teams")
@@ -14,7 +14,7 @@ def _get_team_service(request: Request) -> TeamService:
     return TeamService(team_repo)
 
 
-@router.get("/", response_model=list[TeamModel])
+@router.get("/", response_model=list[Team])
 async def get_teams(team_service: TeamService = Depends(_get_team_service)):
     try:
         return await team_service.get_all_teams()
@@ -22,8 +22,8 @@ async def get_teams(team_service: TeamService = Depends(_get_team_service)):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.post("/", response_model=list[TeamModel])
-async def create_teams(teams: list[TeamModel], team_service: TeamService = Depends(_get_team_service)):
+@router.post("/", response_model=list[Team])
+async def create_teams(teams: list[Team], team_service: TeamService = Depends(_get_team_service)):
     try: 
         return await team_service.create_teams(teams)
     except TeamCreationError as e:
@@ -42,7 +42,7 @@ async def delete_all_teams(team_service: TeamService = Depends(_get_team_service
     
 
 
-@router.get("/{team_id}", response_model=TeamModel)
+@router.get("/{team_id}", response_model=Team)
 async def get_team(team_id: str, team_service: TeamService = Depends(_get_team_service)):
     try:
         return await team_service.get_team(team_id)
@@ -52,8 +52,8 @@ async def get_team(team_id: str, team_service: TeamService = Depends(_get_team_s
         raise HTTPException(status_code=500, detail=str(e))
     
 
-@router.put("/{team_id}", response_model=TeamModel)
-async def update_team(team_id: str, team: TeamModel, team_service: TeamService = Depends(_get_team_service)):
+@router.put("/{team_id}", response_model=Team)
+async def update_team(team_id: str, team: Team, team_service: TeamService = Depends(_get_team_service)):
     try:
         return await team_service.update_team(team_id, team)
     except Exception as e:

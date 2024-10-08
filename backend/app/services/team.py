@@ -1,16 +1,16 @@
 from fastapi import HTTPException
 
 from backend.app.db.repositories.team import TeamRepository
-from backend.app.models.team import TeamModel
+from backend.app.models.team import Team
 from backend.app.exceptions import TeamCreationError, TeamNotFoundError, TeamUpdateError
-from backend.app.services.utils import is_valid_grouping, has_valid_team_name
+from backend.app.services.utils import has_valid_team_name
 
 class TeamService:
     def __init__(self, team_repository: TeamRepository):
         self.team_repo = team_repository
 
     
-    async def create_teams(self, teams: list[TeamModel]) -> list[TeamModel]:
+    async def create_teams(self, teams: list[Team]) -> list[Team]:
         """
         Create multiple teams
         """
@@ -32,7 +32,7 @@ class TeamService:
         return await self.team_repo.delete_all_teams()
     
    
-    async def get_team(self, team_id: str) -> TeamModel:
+    async def get_team(self, team_id: str) -> Team:
         """
         Get a team by its id
         """
@@ -43,14 +43,14 @@ class TeamService:
             raise TeamNotFoundError(team_id=team_id)
     
 
-    async def get_all_teams(self) -> list[TeamModel]:
+    async def get_all_teams(self) -> list[Team]:
         """
         Get all teams
         """
         return await self.team_repo.get_all_teams()
 
 
-    async def update_team(self, team_id: str, team: TeamModel) -> TeamModel:
+    async def update_team(self, team_id: str, team: Team) -> Team:
         """
         Update a team by its id
         """

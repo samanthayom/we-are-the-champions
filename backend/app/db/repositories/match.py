@@ -1,19 +1,19 @@
-from backend.app.models.match import MatchModel
+from backend.app.models.match import Match
 from backend.app.db.config import Database
 
 class MatchRepository:
     def __init__(self, db: Database):
         self.collection = db.get_collection("matches")
 
-    async def get_all_matches(self) -> list[MatchModel]:
+    async def get_all_matches(self) -> list[Match]:
         """
         Get all matches
         """
         matches = await self.collection.find().to_list(length=50)
-        return [MatchModel(**match) for match in matches]
+        return [Match(**match) for match in matches]
 
 
-    async def create_matches(self, matches: list[MatchModel]) -> list[MatchModel]: 
+    async def create_matches(self, matches: list[Match]) -> list[Match]: 
         """
         Create multiple matches
         """
@@ -28,23 +28,23 @@ class MatchRepository:
         return await self.collection.delete_many({})
 
 
-    async def get_match_by_id(self, match_id: str) -> MatchModel:
+    async def get_match_by_id(self, match_id: str) -> Match:
         """
         Get a match by its id
         """
         match = await self.collection.find_one({"id": match_id})
-        return MatchModel(**match) if match else None
+        return Match(**match) if match else None
     
     
-    async def get_matches_by_ids(self, match_ids: list[str]) -> list[MatchModel]:
+    async def get_matches_by_ids(self, match_ids: list[str]) -> list[Match]:
         """
         Get matches by their ids
         """
         matches = await self.collection.find({"id": {"$in": match_ids}}).to_list(length=50)
-        return [MatchModel(**match) for match in matches]
+        return [Match(**match) for match in matches]
 
     
-    async def update_match(self, match_id: str, match: MatchModel) -> MatchModel:
+    async def update_match(self, match_id: str, match: Match) -> Match:
         """
         Update a match
         """

@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field, field_validator
 from uuid import uuid4
 
 
-class TeamModel(BaseModel):
+class Team(BaseModel):
     """
     Represents a particpating team
     """
@@ -13,7 +13,7 @@ class TeamModel(BaseModel):
     registration_date: datetime = Field(..., description="Date of registration")
     group: int = Field(..., description="Group number")
     matches: list[str] = Field(default_factory=list, description="List of IDs of matches played")
-    
+
     points: int = Field(0, description="Points calculated based on: W 3 points, D 1 point, L 0 points")
     alt_points: int = Field(0, description="Points calculated based on: W 5 points, D 3 point, L 1 point")
     wins: int = Field(0, description="Number of wins")

@@ -1,9 +1,9 @@
-from backend.app.models.team import TeamModel
-from backend.app.models.match import MatchModel
+from backend.app.models.team import Team
+from backend.app.models.match import Match
 from backend.app.db.repositories.team import TeamRepository
 
 
-async def has_valid_team_name(team: TeamModel, team_repo: TeamRepository) -> bool:
+async def has_valid_team_name(team: Team, team_repo: TeamRepository) -> bool:
     """
     Check if the team name is unique
     """
@@ -13,7 +13,7 @@ async def has_valid_team_name(team: TeamModel, team_repo: TeamRepository) -> boo
     return True
 
 
-def has_previous_match(team1: TeamModel, team2: TeamModel, match_id: str) -> bool:
+def has_previous_match(team1: Team, team2: Team, match_id: str) -> bool:
     """
     Check if the teams have already played each other
     """
@@ -26,7 +26,7 @@ def has_previous_match(team1: TeamModel, team2: TeamModel, match_id: str) -> boo
     return False
 
 
-def has_valid_grouping(teams: list[TeamModel]) -> bool:
+def has_valid_grouping(teams: list[Team]) -> bool:
     """
     Check if there are exactly 6 teams in each group
     """

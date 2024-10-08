@@ -1,7 +1,7 @@
 from backend.app.db.repositories.match import MatchRepository
 from backend.app.db.repositories.team import TeamRepository
-from backend.app.models.match import MatchModel
-from backend.app.models.team import TeamModel
+from backend.app.models.match import Match
+from backend.app.models.team import Team
 from backend.app.exceptions import MatchCreationError, MatchNotFoundError, TeamNotFoundError, MatchUpdateError
 from backend.app.services.utils import has_previous_match
 
@@ -12,21 +12,22 @@ class MatchService:
         self.match_repo = match_repository
 
 
-    async def get_all_matches(self) -> list[MatchModel]:
+    async def get_all_matches(self) -> list[Match]:
         """
         Get all matches
         """
         return await self.match_repo.get_all_matches()
     
 
-    async def get_team_lookup(self) -> dict[str, TeamModel]:
+    async def get_team_lookup(self) -> dict[str, Team]:
         """
         Get all teams
         """
         return {team.name: team for team in await self.team_repo.get_all_teams()}
 
 
-    async def create_matches(self, matches: list[MatchModel]) -> list[MatchModel]:
+
+    async def create_matches(self, matches: list[Match]) -> list[Match]:
         """
         Create multiple matches
         """
@@ -68,7 +69,7 @@ class MatchService:
         return await self.match_repo.delete_all_matches()
     
 
-    async def get_match(self, match_id: str) -> MatchModel:
+    async def get_match(self, match_id: str) -> Match:
         """
         Get a match by its id
         """
@@ -79,7 +80,7 @@ class MatchService:
             raise MatchNotFoundError(match_id)
         
     
-    async def get_matches_by_team_id(self, team_id: str) -> list[MatchModel]:
+    async def get_matches_by_team_id(self, team_id: str) -> list[Match]:
         """
         Get all matches played by a team
         """
@@ -89,7 +90,7 @@ class MatchService:
         return await self.match_repo.get_matches_by_ids(team.matches)
     
 
-    async def update_match(self, match_id: str, match: MatchModel) -> MatchModel:
+    async def update_match(self, match_id: str, match: Match) -> Match:
         """
         Update a match
         """
