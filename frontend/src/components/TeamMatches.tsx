@@ -23,12 +23,16 @@ function TeamMatches({team, matches}: TeamMatchesProps) {
     const allTeamNames = teams.map(t => t.name);
 
     const handleMatchChange = (updatedMatch: Match) => {
-        console.log('updatedMatch', updatedMatch);
+        if (updatedMatch.teams[0].score < 0 || updatedMatch.teams[1].score < 0) {
+            setTeamMatchesError('Scores cannot be negative');
+            return; 
+        }
         setMatchesState(prevMatches => 
             prevMatches.map(match => 
                 match.id === updatedMatch.id ? updatedMatch : match
             )
         );
+        setTeamMatchesError(null); // Clear any previous error if the update is valid
     };
 
 
