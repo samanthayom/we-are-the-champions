@@ -4,7 +4,6 @@ from backend.app.models.team import Team
 from backend.app.services.utils import has_valid_grouping
 from backend.app.exceptions import RankingProcessingError
 
-
 def _rank_teams(teams: list[Team]) -> list[Team]:
     """
     Rank teams based on points, goals, alternate points, and registration date

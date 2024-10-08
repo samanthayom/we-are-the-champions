@@ -3,8 +3,11 @@ from backend.app.db.repositories.team import TeamRepository
 from backend.app.models.match import Match
 from backend.app.models.team import Team
 from backend.app.exceptions import MatchCreationError, MatchNotFoundError, TeamNotFoundError, MatchUpdateError
-from backend.app.services.utils import has_previous_match
+from backend.app.services.utils import has_previous_match, get_match_changes
+from backend.app.logger import get_logger
 
+
+logger = get_logger(__name__)
 
 class MatchService:
     def __init__(self, match_repository: MatchRepository, team_repository: TeamRepository):
@@ -109,5 +112,8 @@ class MatchService:
         
         elif has_previous_match(team1, team2, match_id):
             raise MatchUpdateError(f"Match involves teams {team1.name} and {team2.name} that have already played each other")
+        
+        changes = await get_match_changes(match_id, match, self.match_repo)
+        logger.info(f"Match {match_id} updated: {changes}")
         
         return await self.match_repo.update_match(match_id, match)

@@ -1,7 +1,11 @@
 from backend.app.db.repositories.team import TeamRepository
 from backend.app.models.team import Team
 from backend.app.exceptions import TeamCreationError, TeamNotFoundError, TeamUpdateError
-from backend.app.services.utils import has_valid_team_name
+from backend.app.services.utils import has_valid_team_name, get_team_changes
+from backend.app.logger import get_logger
+
+
+logger = get_logger(__name__)
 
 class TeamService:
     def __init__(self, team_repository: TeamRepository):
@@ -59,5 +63,10 @@ class TeamService:
         
         if not await has_valid_team_name(team, self.team_repo):
             raise TeamUpdateError(f"Team with name {team.name} already exists")
+        
+
+        # Track changes
+        change_details = await get_team_changes(team_id, team, self.team_repo)
+        logger.info(f"Changes made to {team.name}: {change_details}")
     
         return await self.team_repo.update_team(team_id, team)
