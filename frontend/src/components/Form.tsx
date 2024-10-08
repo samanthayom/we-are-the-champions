@@ -10,7 +10,7 @@ import {
     Typography 
 } from '@mui/material';
 
-import { Team } from '../interfaces';
+import { CustomError, Team } from '../interfaces';
 import { parseTeamsInput, parseMatchesInput } from '../utils';
 import { deleteTeams, postTeams } from '../api/teams';
 import { postMatches } from '../api/matches';
@@ -59,11 +59,11 @@ function Form({ onClose }: FormProps) {
                 // Rollback if match creation fails
                 await deleteTeams();
                 console.error(error);
-                setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+                setError(error instanceof CustomError ? error.uiMessage : 'An unexpected error occurred');
             }
         } catch (error) {
             console.error(error);
-            setError(error instanceof Error ? error.message : 'An unexpected error occurred');
+            setError(error instanceof CustomError ? error.uiMessage : 'An unexpected error occurred');
         }
     };
 

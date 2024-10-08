@@ -34,8 +34,8 @@ export const TeamAndRankingProvider: React.FC<{ children: React.ReactNode }> = (
             const fetchedTeams = await fetchTeams();
             setTeams(fetchedTeams);
         } catch (error) {
-            console.error('Error fetching teams:', error);
-            setTeamsError('Failed to fetch teams');
+            console.error(error);
+            setTeamsError(error instanceof CustomError ? error.uiMessage : 'An unexpected error occurred');
         }
     }, []);
 
@@ -45,15 +45,11 @@ export const TeamAndRankingProvider: React.FC<{ children: React.ReactNode }> = (
             const fetchedRankings = await fetchRankings();
             setRankings(fetchedRankings);
         } catch (error) {
-            if (error instanceof CustomError) {
-                console.log('Error fetching rankings:', error);
-                setRankingsError(error.uiMessage);
-            } else {
-                console.error('Error fetching rankings:', error);
-                setRankingsError('Failed to fetch rankings');
-            }
+            console.error(error);
+            setRankingsError(error instanceof CustomError ? error.uiMessage : 'An unexpected error occurred');
         }
     }, []);
+
 
     useEffect(() => {
         refreshTeams();

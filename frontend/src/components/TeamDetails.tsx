@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Team } from '../interfaces';
-import { Typography, Box, Button, Stack, TextField, Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import { Typography, Box, Button, Stack, TextField, Select, MenuItem, SelectChangeEvent, Alert } from '@mui/material';
 import { Clear, Edit, Save } from '@mui/icons-material';
 import { grey } from '@mui/material/colors';
 import { formatDate } from '../utils';
 import { fetchTeam, updateTeam } from '../api/teams';
+import { CustomError } from '../interfaces';
 
 
 
@@ -17,6 +18,7 @@ function TeamDetails({ team }: TeamDetailsProps) {
     const [teamState, setTeamState] = useState<Team>(team);
     const [isEditing, setIsEditing] = useState(false);
     const [inputError, setInputError] = useState<boolean>(false);
+    const [teamDetailsError, setTeamDetailsError] = useState<string | null>(null);
 
 
     const handleGroupChange = (event: SelectChangeEvent) => {
@@ -39,27 +41,37 @@ function TeamDetails({ team }: TeamDetailsProps) {
 
     };
 
-    const handleSave = () => {
-        updateTeam(team.id!, teamState)
-            .then((updatedTeam) => {
-                setTeamState(updatedTeam);
-                setIsEditing(false);
-            })
-            .catch(error => console.error('Error updating team:', error));
+    const handleSave = async () => {
+        try {
+            const updatedTeam = await updateTeam(team.id!, teamState);
+            setTeamState(updatedTeam);
+            setIsEditing(false);
+        } catch (error) {
+            console.error(error);
+            setTeamDetailsError(error instanceof CustomError ? error.uiMessage : 'An unexpected error occurred');
+
+        }
     };
 
-    const handleCancel = () => {
-        fetchTeam(team.id!)
-            .then((fetchedTeam) => {
-                setTeamState(fetchedTeam);
-                setIsEditing(false);
-            })
-            .catch(error => console.error('Error fetching team:', error));
-    }
+
+    const handleCancel = async () => {
+        try {
+            const fetchedTeam = await fetchTeam(team.id!);
+            setTeamState(fetchedTeam);
+            setIsEditing(false);
+        } catch (error) {
+            console.error(error);
+            setTeamDetailsError(error instanceof CustomError ? error.uiMessage : 'An unexpected error occurred');
+        }
+    };
+
 
     const formatDateInput = (dateString: string) => {
+        if (!dateString) {
+            return '';
+        }
         const date = new Date(dateString);
-        return date.toISOString().split('T')[0];
+        return date.toISOString().split('T')[0]; 
     };
 
     return (
@@ -100,6 +112,11 @@ function TeamDetails({ team }: TeamDetailsProps) {
                     )}
                 </Box>
             </Box>
+            {teamDetailsError ? (
+                <Alert severity="error" sx={{mt: 2}}>
+                    {teamDetailsError}
+                </Alert>
+            ) : null}
             <Stack gap={1}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Typography variant="body1" sx={{fontWeight: 'medium'}}>Group:</Typography>

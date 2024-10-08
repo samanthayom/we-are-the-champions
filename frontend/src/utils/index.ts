@@ -1,5 +1,5 @@
 
-import { Team, Match } from '../interfaces';
+import { CustomError, Team, Match } from '../interfaces';
 
 
 function convertDateToISO(dateStr: string): string {
@@ -22,26 +22,26 @@ export const parseTeamsInput = (input: string): Team[] => {
         const fields = line.trim().split(' ');
 
         if (fields.length !== 3) {
-            throw new Error(`Line ${index + 1}: Invalid format. Each line should be a space-separated list of each team's name, registration date, and group number.`);
+            throw new CustomError(`Line ${index + 1}: Invalid format. Each line should be a space-separated list of each team's name, registration date, and group number.`);
         }
 
         const [name, dateStr, groupStr] = fields;
 
         if (!dateRegex.test(dateStr)) {
-            throw new Error(`Line ${index + 1}: Invalid format. Date must be in the format DD/MM.`);
+            throw new CustomError(`Line ${index + 1}: Invalid format. Date must be in the format DD/MM.`);
         }
 
         let registrationDate: string;
         try {
             registrationDate = convertDateToISO(dateStr);
         } catch (error) {
-            throw new Error(`Line ${index + 1}: Invalid date. Date must be in the format DD/MM.`);
+            throw new CustomError(`Line ${index + 1}: Invalid date. Date must be in the format DD/MM.`);
         }
 
 
         const group = parseInt(groupStr, 10);
         if (isNaN(group) || (group !== 1 && group !== 2)) {
-            throw new Error(`Line ${index + 1}: Invalid group number. Group must be either 1 or 2.`);
+            throw new CustomError(`Line ${index + 1}: Invalid group number. Group must be either 1 or 2.`);
         }
 
         return { 
@@ -57,27 +57,27 @@ export const parseMatchesInput = (input: string): Match[] => {
     const lines = input.trim().split('\n').filter(line => line.trim() !== '');
 
     if (lines.length === 0) {
-        throw new Error(`You must provide at least 1 match result.`);
+        throw new CustomError(`You must provide at least 1 match result.`);
     }
 
     return lines.map((line, index) => {
         const fields = line.trim().split(' ');
 
         if (fields.length !== 4) {
-            throw new Error(`Line ${index + 1}: Invalid format. Each line should be a space-separated list of: Team 1's name, Team 2's name, Team 1's score, and Team 2's score.`);
+            throw new CustomError(`Line ${index + 1}: Invalid format. Each line should be a space-separated list of: Team 1's name, Team 2's name, Team 1's score, and Team 2's score.`);
         }
 
         const [team1, team2, score1Str, score2Str] = fields;
 
         if (typeof team1 !== 'string' || typeof team2 !== 'string') {
-            throw new Error(`Line ${index + 1}: Invalid format. The first two fields must be team names (string).`);
+            throw new CustomError(`Line ${index + 1}: Invalid format. The first two fields must be team names (string).`);
         }
 
         const score1 = parseInt(score1Str, 10);
         const score2 = parseInt(score2Str, 10);
 
         if (isNaN(score1) || isNaN(score2)) {
-            throw new Error(`Line ${index + 1}: Invalid score. The last two items must be team scores (integer).`);
+            throw new CustomError(`Line ${index + 1}: Invalid score. The last two items must be team scores (integer).`);
         }
 
         return {

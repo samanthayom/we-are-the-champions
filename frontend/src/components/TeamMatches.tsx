@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Match, Team } from '../interfaces';
-import { Typography, Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button} from '@mui/material';
+import { Match, Team, CustomError } from '../interfaces';
+import { Typography, Box, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, Button, Alert} from '@mui/material';
 import { Clear, Edit, Save } from '@mui/icons-material';
 import { grey } from '@mui/material/colors';
 import { useTeamAndRankingContext } from '../contexts/TeamAndRankingContext';
@@ -18,6 +18,7 @@ function TeamMatches({team, matches}: TeamMatchesProps) {
     const {teams} = useTeamAndRankingContext();
     const [matchesState, setMatchesState] = useState<Match[]>(matches);
     const [isEditing, setIsEditing] = useState(false);
+    const [teamMatchesError, setTeamMatchesError] = useState<string | null>(null);
     
     const allTeamNames = teams.map(t => t.name);
 
@@ -32,26 +33,27 @@ function TeamMatches({team, matches}: TeamMatchesProps) {
 
 
     const handleSave = async () => {
-        console.log('matchesState', matchesState);
-        await Promise.all(
-            matchesState.map(async (match) => {
-                try {
-                    await updateMatch(match);
-                } catch (error) {
-                    console.error(`Error posting match ${match.id}:`, error);
-                }
-            })
-        )
-        setIsEditing(false);
+        try{
+            await Promise.all(matchesState.map((match) => updateMatch(match)));
+            setTeamMatchesError(null);
+            setIsEditing(false);
+        } catch (error) {
+            console.error(error);
+            setTeamMatchesError(error instanceof CustomError ? error.uiMessage : 'An unexpected error occurred');
+        }
     };
 
-    const handleCancel = () => {
-        fetchMatches(team.id!)
-            .then((fetchedMatches) => {
-                setMatchesState(fetchedMatches);
-                setIsEditing(false);
-            })
-            .catch(error => console.error('Error fetching matches:', error));
+    const handleCancel = async () => {
+        try {
+            const fetchedMatches = await fetchMatches(team.id!);
+            setMatchesState(fetchedMatches);
+            setTeamMatchesError(null);
+            setIsEditing(false);
+        } catch (error) {
+            console.error(error);
+            setTeamMatchesError(error instanceof CustomError ? error.uiMessage : 'An unexpected error occurred');
+
+        }
     };
 
 
@@ -90,6 +92,11 @@ function TeamMatches({team, matches}: TeamMatchesProps) {
                     </Button>
                 )}
             </Box>
+            {teamMatchesError ? (
+                <Alert severity="error" sx={{mt: 2}}>
+                    {teamMatchesError}
+                </Alert>
+            ) : null}
             <TableContainer>
                 <Table>
                     <TableHead>

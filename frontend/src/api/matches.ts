@@ -4,41 +4,45 @@ import { api, apiRequest } from "./index";
 
 
 export const postMatches = async (matches: Match[]) => {
-    const response = await api.post('/matches', matches);
-    if (response.status !== 200) {
-        console.error('Failed to post matches:', response.data);
-        throw new Error('Failed to post matches');
+    try {
+        const responseData = await apiRequest(api.post('/matches', matches));
+        console.log('Matches posted successfully:', responseData);
+    } catch (error) {
+        console.error('Failed to post matches:', error);
+        throw error;
     }
-    console.log('Matches posted successfully:', response.data);
 }
 
 
 export const fetchMatches = async (teamID: string): Promise<Match[]> => {
-    const response = await api.get(`/matches/${teamID}`);
-    if (response.status !== 200) {
-        console.error('Failed to fetch matches:', response.data);
-        throw new Error('Failed to fetch matches');
+    try{
+        const responseData = await apiRequest(api.get(`/matches/${teamID}`));
+        console.log('Matches fetched successfully:', responseData);
+        return snakeToCamel(responseData);
+    } catch (error) {
+        console.error('Failed to fetch matches:', error);
+        throw error;
     }
-    console.log('Matches fetched successfully:', response.data);
-    return snakeToCamel(response.data);
 }
 
 
 export const deleteMatches = async () => {
-    const response = await api.delete('/matches');
-    if (response.status !== 200) {
-        console.error('Failed to delete matches:', response.data);
-        throw new Error('Failed to delete matches');
+    try {
+        const responseData = await apiRequest(api.delete('/matches'));
+        console.log('Matches deleted successfully:', responseData);
+    } catch (error) {
+        console.error('Failed to delete matches:', error);
+        throw error;
     }
-    console.log('Matches deleted successfully:', response.data);
 }
 
 
 export const updateMatch = async (match: Match) => {
-    const response = await api.put(`/matches/${match.id}`, match);
-    if (response.status !== 200) {
-        console.error('Failed to post match:', response.data);
-        throw new Error('Failed to post match');
+    try {
+        const responseData = await apiRequest(api.put(`/matches/${match.id}`, match));
+        console.log('Matches updated successfully:', responseData);
+    } catch (error) {
+        console.error('Failed to update matches:', error);
+        throw error;
     }
-    console.log('Match posted successfully:', response.data);
 }

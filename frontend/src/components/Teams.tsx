@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { 
+    Alert,
     Box,
     Button,
     Dialog,
@@ -21,8 +22,7 @@ import { formatDate } from '../utils';
 
 
 function Teams({ onTeamSelect }: { onTeamSelect: (teamId: string) => void }) {
-    const { teams, refreshTeams, refreshRankings } = useTeamAndRankingContext();
-    // TODO: Import and handle teams error here
+    const { teams, teamsError, refreshTeams, refreshRankings } = useTeamAndRankingContext();
     const [open, setOpen] = useState(false);
 
     const handleRowClick = (teamId: string) => onTeamSelect(teamId);
@@ -38,7 +38,11 @@ function Teams({ onTeamSelect }: { onTeamSelect: (teamId: string) => void }) {
             <Typography variant="h4" gutterBottom>
                 All Teams
             </Typography>
-            {teams.length === 0 ? (
+            {teamsError ? (
+                <Alert severity="error">
+                    {teamsError}
+                </Alert>
+            ) : teams.length === 0 ? (
                 <Paper 
                     sx={{
                         mt: 2,

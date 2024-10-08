@@ -2,55 +2,60 @@ import { Team } from "../interfaces";
 import { api, apiRequest } from "./index";
 import { snakeToCamel, camelToSnake } from "../utils";
 
+
 export const fetchTeams = async (): Promise<Team[]> => {
-    const response = await api.get('/teams');
-    if (response.status !== 200) {
-        console.error('Failed to fetch teams:', response.data);
-        throw new Error('Failed to fetch teams');
+    try {
+        const responseData = await apiRequest(api.get('/teams'));
+        console.log('Teams fetched successfully:', responseData);
+        return snakeToCamel(responseData);
+    } catch (error) {
+        console.error('Failed to fetch teams:', error);
+        throw error;
     }
-    console.log('Teams fetched successfully:', response.data);
-    return snakeToCamel(response.data);
 };
 
 
 export const postTeams = async (teams: Team[]) => {
-    const response = await api.post('/teams', 
-        camelToSnake(teams)
-        );
-    if (response.status !== 200) {
-        console.error('Failed to post teams:', response.data);
-        throw new Error('Failed to post teams');
+    try { 
+        const responseData = await apiRequest(api.post('/teams', camelToSnake(teams)));
+        console.log('Teams posted successfully:', responseData);
+    } catch (error) {
+        console.error('Failed to post teams:', error);
+        throw error;
     }
-    console.log('Teams posted successfully:', response.data);
 };
 
 
 export const deleteTeams = async () => {
-    const response = await api.delete('/teams');
-    if (response.status !== 200) {
-        console.error('Failed to delete teams:', response.data);
-        throw new Error('Failed to delete teams');
+    try {
+        const responseData = await apiRequest(api.delete('/teams'));
+        console.log('Teams deleted successfully:', responseData);
+    } catch (error) {
+        console.error('Failed to delete teams:', error);
+        throw error;
     }
-    console.log('Teams deleted successfully:', response.data);
 };
 
 
 export const fetchTeam = async (teamID: string): Promise<Team> => {
-    const response = await api.get(`/teams/${teamID}`);
-    if (response.status !== 200) {
-        console.error('Failed to fetch team:', response.data);
-        throw new Error('Failed to fetch team');
+    try{
+        const responseData = await apiRequest(api.get(`/teams/${teamID}`));
+        console.log('Team fetched successfully:', responseData);
+        return snakeToCamel(responseData);
+    } catch (error) {
+        console.error('Failed to fetch team:', error);
+        throw error;
     }
-    return snakeToCamel(response.data);
 };
 
 
 export const updateTeam = async (teamID: string, team: Team) => {
-    console.log('Updating team:', camelToSnake(team));
-    const response = await api.put(`/teams/${teamID}`, camelToSnake(team));
-    if (response.status !== 200) {
-        console.error('Failed to update team:', response.data);
-        throw new Error('Failed to update team');
+    try {
+        const responseData = await apiRequest(api.put(`/teams/${teamID}`, camelToSnake(team)));
+        console.log('Team updated successfully:', responseData);
+        return snakeToCamel(responseData);
+    } catch (error) {
+        console.error('Failed to update team:', error);
+        throw error;
     }
-    return snakeToCamel(response.data);
 };

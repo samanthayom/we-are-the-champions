@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Stack } from '@mui/material';
+import { Button, Stack, Alert } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Rankings from './Rankings';
 import Teams from './Teams';
@@ -7,12 +7,14 @@ import { deleteTeams } from '../api/teams';
 import { deleteMatches } from '../api/matches';
 import TeamPanel from './TeamPanel';
 import { useTeamAndRankingContext } from '../contexts/TeamAndRankingContext';
+import { CustomError } from '../interfaces';
 
 
 function MainPanel() {
     const {teams, refreshTeams, refreshRankings} = useTeamAndRankingContext();
     const [teamDetailsOpen, setTeamDetailsOpen] = useState(false);
     const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
 
     const handleTeamDetailsOpen = (teamId: string) => {
@@ -35,12 +37,13 @@ function MainPanel() {
             refreshRankings();
         } catch (error) {
             console.error("Error clearing data:", error);
-            // TODO: Handle error here
+            setError(error instanceof CustomError ? error.uiMessage : 'An unexpected error occurred');
         }
     };
 
     return (
         <>
+            {error && <Alert severity="error">{error}</Alert>}  
             <Stack spacing={6} sx={{ mt: 8, mb: 4 }}>
                 <Rankings onTeamSelect={handleTeamDetailsOpen}/>
                 <Teams onTeamSelect={handleTeamDetailsOpen}/>
