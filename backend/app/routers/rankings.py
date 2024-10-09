@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, Request, HTTPException
 
-from backend.app.services.ranking import RankingService
-from backend.app.db.repositories.team import TeamRepository
-from backend.app.db.repositories.match import MatchRepository
-from backend.app.exceptions import RankingProcessingError
-from backend.app.logger import get_logger
+from ..services.ranking import RankingService
+from ..db.repositories.team import TeamRepository
+from ..db.repositories.match import MatchRepository
+from ..exceptions import RankingProcessingError
+from ..logger import get_logger
 
 
 router = APIRouter(prefix="/rankings")

@@ -2,17 +2,22 @@ import os
 from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 
 class Database:
     def __init__(self):
-        self.uri = os.getenv("MONGODB_URI")
-        self.db_name = os.getenv("MONGODB_DB_NAME")
+        self.name = os.getenv("DB_NAME")
+        self.username = os.getenv("DB_USERNAME")
+        self.password = os.getenv("DB_PASSWORD")
+        self.host = os.getenv("DB_HOST")
+        self.uri = f"mongodb://{self.username}:{self.password}@{self.host}:27017/{self.name}?authSource=admin"
+
 
     def connect_db(self):
         self.client = AsyncIOMotorClient(self.uri)
-        self.db = self.client[self.db_name]
+        self.db = self.client[self.name]
 
     def close_db(self):
         self.client.close()

@@ -1,8 +1,8 @@
-from backend.app.db.repositories.team import TeamRepository
-from backend.app.db.repositories.match import MatchRepository
-from backend.app.models.team import Team
-from backend.app.services.utils import has_valid_grouping
-from backend.app.exceptions import RankingProcessingError
+from ..db.repositories.team import TeamRepository
+from ..db.repositories.match import MatchRepository
+from ..models.team import Team
+from ..services.utils import has_valid_grouping
+from ..exceptions import RankingProcessingError
 
 def _rank_teams(teams: list[Team]) -> list[Team]:
     """

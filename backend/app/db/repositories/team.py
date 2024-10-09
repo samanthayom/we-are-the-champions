@@ -1,5 +1,5 @@
-from backend.app.models.team import Team
-from backend.app.db.config import Database
+from ...models.team import Team
+from ...db.config import Database
 
 class TeamRepository:
     def __init__(self, db: Database):

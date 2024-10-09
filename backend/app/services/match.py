@@ -1,10 +1,10 @@
-from backend.app.db.repositories.match import MatchRepository
-from backend.app.db.repositories.team import TeamRepository
-from backend.app.models.match import Match
-from backend.app.models.team import Team
-from backend.app.exceptions import MatchCreationError, MatchNotFoundError, TeamNotFoundError, MatchUpdateError
-from backend.app.services.utils import has_previous_match, get_match_changes
-from backend.app.logger import get_logger
+from ..db.repositories.match import MatchRepository
+from ..db.repositories.team import TeamRepository
+from ..models.match import Match
+from ..models.team import Team
+from ..exceptions import MatchCreationError, MatchNotFoundError, TeamNotFoundError, MatchUpdateError
+from ..services.utils import has_previous_match, get_match_changes
+from ..logger import get_logger
 
 
 logger = get_logger(__name__)

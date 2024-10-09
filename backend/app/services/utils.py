@@ -1,7 +1,7 @@
-from backend.app.models.team import Team
-from backend.app.models.match import Match
-from backend.app.db.repositories.team import TeamRepository
-from backend.app.db.repositories.match import MatchRepository
+from ..models.team import Team
+from ..models.match import Match
+from ..db.repositories.team import TeamRepository
+from ..db.repositories.match import MatchRepository
 
 
 async def has_valid_team_name(team: Team, team_repo: TeamRepository) -> bool:

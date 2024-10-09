@@ -1,5 +1,5 @@
-from backend.app.models.match import Match
-from backend.app.db.config import Database
+from ...models.match import Match
+from ...db.config import Database
 
 class MatchRepository:
     def __init__(self, db: Database):

@@ -1,8 +1,8 @@
-from backend.app.db.repositories.team import TeamRepository
-from backend.app.models.team import Team
-from backend.app.exceptions import TeamCreationError, TeamNotFoundError, TeamUpdateError
-from backend.app.services.utils import has_valid_team_name, get_team_changes
-from backend.app.logger import get_logger
+from ..db.repositories.team import TeamRepository
+from ..models.team import Team
+from ..exceptions import TeamCreationError, TeamNotFoundError, TeamUpdateError
+from ..services.utils import has_valid_team_name, get_team_changes
+from ..logger import get_logger
 
 
 logger = get_logger(__name__)

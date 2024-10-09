@@ -1,11 +1,11 @@
 import logging
 from fastapi import APIRouter, Depends, Request, HTTPException
 
-from backend.app.services.team import TeamService
-from backend.app.db.repositories.team import TeamRepository
-from backend.app.models.team import Team
-from backend.app.exceptions import TeamCreationError, TeamNotFoundError, TeamUpdateError
-from backend.app.logger import get_logger
+from ..services.team import TeamService
+from ..db.repositories.team import TeamRepository
+from ..models.team import Team
+from ..exceptions import TeamCreationError, TeamNotFoundError, TeamUpdateError
+from ..logger import get_logger
 
 router = APIRouter(prefix="/teams")
 

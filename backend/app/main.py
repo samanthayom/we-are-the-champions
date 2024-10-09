@@ -4,11 +4,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.app.routers.teams import router as teams_router
-from backend.app.routers.matches import router as matches_router
-from backend.app.routers.rankings import router as rankings_router
-from backend.app.db.config import Database
-from backend.app.logger import get_logger
+from .routers.teams import router as teams_router
+from .routers.matches import router as matches_router
+from .routers.rankings import router as rankings_router
+from .db.config import Database
+from .logger import get_logger
 
 
 logger = get_logger(__name__)
@@ -27,7 +27,7 @@ app = FastAPI(lifespan=lifespan)
 # Configure CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # TODO: Update this for production
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=["Authorization", "Content-Type"],
@@ -61,9 +61,3 @@ app.include_router(rankings_router)
 async def root():
     return {"message": "The GovTech Football Championship Tracker is running."}
 
-
-# TODO: Remove this for production
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run("backend.app.main:app", host="0.0.0.0", port=8000, reload=True, access_log=False)
- 

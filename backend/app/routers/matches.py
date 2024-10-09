@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, Request, HTTPException
 
-from backend.app.services.match import MatchService
-from backend.app.db.repositories.match import MatchRepository
-from backend.app.db.repositories.team import TeamRepository
-from backend.app.models.match import Match
-from backend.app.exceptions import MatchCreationError, MatchNotFoundError, TeamNotFoundError
-from backend.app.logger import get_logger
+from ..services.match import MatchService
+from ..db.repositories.match import MatchRepository
+from ..db.repositories.team import TeamRepository
+from ..models.match import Match
+from ..exceptions import MatchCreationError, MatchNotFoundError, TeamNotFoundError
+from ..logger import get_logger
 
 
 router = APIRouter(prefix="/matches")
